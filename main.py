@@ -52,12 +52,14 @@ def on_enter(event):
 
 # получение координат курсора
 def on_mouse_click(x, y, button, pressed):
-    global mx, my, s
+    global mx, my, s, px, py
     if button == mouse.Button.left and pressed:
         s = True
         mx, my = x, y
+        px, py = mx, my
     else:
         s = False
+        px, py = None, None
 def on_move(x, y):
     global mx, my
     mx, my = x, y
@@ -66,18 +68,35 @@ listener.start()
 
 # рисовалка
 def gu():
-    if s:
+    global px, py
+    ent.bind("<Return>", on_enter)
+    entw.bind("<Return>", on_enter1)
+    print(root.winfo_x(), root.winfo_y())
+    # print(ent.get())
+    if s and px is not None and py is not None:
         cx = (mx - 9 - root.winfo_x())*sf
         cy = (my - 39 - root.winfo_y())*sf
-        # print(root.winfo_x(), root.winfo_y())
-        # print(ent.get())
-        ent.bind("<Return>", on_enter)
-        entw.bind("<Return>", on_enter1)
+        pcx = (px - 9 - root.winfo_x())*sf
+        pcy = (py - 39 - root.winfo_y())*sf
         try:
-            canvas.create_oval(cx-width, cy-width, cx+width, cy+width,fill=color,  outline=color, width=width)
+            canvas.create_line(pcx, pcy, cx, cy, fill=color, width=width, capstyle=ROUND, smooth=True)
         except:
             pass
-    root.after(1, gu)
+        px, py = mx, my
+    root.after(10, gu)
 
-root.after(1, gu)
+# старая система
+# def gu():
+#     if s:
+#         cx = (mx - 9 - root.winfo_x())*sf
+#         cy = (my - 39 - root.winfo_y())*sf
+#         ent.bind("<Return>", on_enter)
+#         entw.bind("<Return>", on_enter1)
+#         try:
+#             canvas.create_oval(cx-width, cy-width, cx+width, cy+width,fill=color,  outline=color, width=width)
+#         except:
+#             pass
+#     root.after(1, gu)
+
+root.after(10, gu)
 root.mainloop()
